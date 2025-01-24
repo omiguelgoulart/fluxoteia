@@ -33,7 +33,7 @@ export default function AddExpenseModal({ onAddExpense }: AddExpenseModalProps) 
     account: "",
     category: "",
     subcategory: "",
-    value: 0,
+    amount : 0,
     status: "PENDENTE",
   })
 
@@ -41,13 +41,13 @@ export default function AddExpenseModal({ onAddExpense }: AddExpenseModalProps) 
   const [isLoading, setIsLoading] = useState(false)
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
+    const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: name === "value" ? Number.parseFloat(value) || 0 : value,
-    }))
-  }
-
+      [name]: name === "amount" ? Number.parseFloat(value) || 0 : value,
+    }));
+  };
+  
   const handleSelectChange = (name: string, value: string) => {
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
@@ -74,17 +74,17 @@ export default function AddExpenseModal({ onAddExpense }: AddExpenseModalProps) 
   }
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-
-    if (!formData.account || !formData.category || !formData.subcategory || formData.value <= 0) {
-      alert("Por favor, preencha todos os campos obrigatórios.")
-      return
+    e.preventDefault();
+  
+    if (!formData.account || !formData.category || !formData.subcategory || formData.amount <= 0) {
+      alert("Por favor, preencha todos os campos obrigatórios.");
+      return;
     }
-
-    console.log("Dados enviados ao servidor:", formData)
-
-    onAddExpense(formData)
-
+  
+    console.log("Dados enviados ao servidor:", formData); // Adicione este log para verificar o payload
+  
+    onAddExpense(formData);
+  
     setFormData({
       date: new Date().toISOString().split("T")[0],
       number: "",
@@ -92,10 +92,11 @@ export default function AddExpenseModal({ onAddExpense }: AddExpenseModalProps) 
       account: "",
       category: "",
       subcategory: "",
-      value: 0,
+      amount: 0,
       status: "PENDENTE",
-    })
-  }
+    });
+  };
+  
 
   const subcategoriasPorCategoria: { [key: string]: string[] } = {
     CUSTOS_OPERACAO: [
@@ -259,12 +260,12 @@ export default function AddExpenseModal({ onAddExpense }: AddExpenseModalProps) 
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="value">Valor</Label>
+            <Label htmlFor="amount">Valor</Label>
             <Input
               type="number"
-              id="value"
-              name="value"
-              value={formData.value.toString()}
+              id="amount"
+              name="amount"
+              value={formData.amount.toString()}
               onChange={handleInputChange}
               required
               step="0.01"

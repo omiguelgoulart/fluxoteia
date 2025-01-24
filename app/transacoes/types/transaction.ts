@@ -1,16 +1,9 @@
-
 export enum TransactionStatus {
-
-  PAGO = 'PAGO',
-
-  PENDENTE = 'PENDENTE',
-
-  CANCELADO = 'CANCELADO',
-
-  RECEBIDO = 'RECEBIDO'
-
+  PAGO = "PAGO",
+  PENDENTE = "PENDENTE",
+  CANCELADO = "CANCELADO",
+  RECEBIDO = "RECEBIDO",
 }
-
 
 export interface Transaction {
   id: string
@@ -28,4 +21,3 @@ export interface TransactionSummary {
   accountsPayable: number
   accountsReceivable: number
 }
-

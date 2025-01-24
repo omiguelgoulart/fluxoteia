@@ -1,33 +1,33 @@
-'use server'
+import { Movimentacao } from '../types/movimentacao';
+import { Transaction, TransactionStatus, TransactionSummary } from '../types/transaction';
+import { API_BASE_URL } from '@/lib/config';
 
-import { Transaction, TransactionSummary, TransactionStatus } from '../types/transaction'
+export async function getTransactions(): Promise<{ transactions: Transaction[]; summary: TransactionSummary }> {
+  const res = await fetch(`${API_BASE_URL}/movimentacao`, { cache: 'no-store' });
 
-export async function getTransactions(): Promise<{
-  transactions: Transaction[]
-  summary: TransactionSummary
-}> {
-  // TODO: Replace with your actual API call
-  const data = {
-    transactions: [
-      {
-        id: '1',
-        date: '02/01/2025',
-        details: '',
-        account: 'dinheiro',
-        inputValue: 175.12,
-        outputValue: 70.0,
-        status: TransactionStatus.PAGO,
-      },
-      // Add more mock data as needed
-    ],
-    summary: {
-      totalInput: 9932.02,
-      totalOutput: 10511.80,
-      accountsPayable: 0,
-      accountsReceivable: 0,
-    },
+  if (!res.ok) {
+    throw new Error('Erro ao carregar movimentações');
   }
 
-  return data
-}
+  const data: Movimentacao[] = await res.json();
 
+  const summary: TransactionSummary = {
+    totalInput: data.filter((t) => t.tipo === 'ENTRADA').reduce((sum, t) => sum + t.value, 0),
+    totalOutput: data.filter((t) => t.tipo === 'SAIDA').reduce((sum, t) => sum + t.value, 0),
+    accountsPayable: data.filter((t) => t.status === 'PENDENTE' && t.tipo === 'SAIDA').reduce((sum, t) => sum + t.value, 0),
+    accountsReceivable: data.filter((t) => t.status === 'PENDENTE' && t.tipo === 'ENTRADA').reduce((sum, t) => sum + t.value, 0),
+  };
+
+  const transactions: Transaction[] = data.map((t) => ({
+    id: String(t.id),
+    date: t.date,
+    details: t.description || 'Sem descrição',
+    account: t.account || 'Não especificado',
+    inputValue: t.tipo === 'ENTRADA' ? t.value : null,
+    outputValue: t.tipo === 'SAIDA' ? t.value : null,
+    status: t.status as TransactionStatus, // Casting explícito
+  }));
+  
+
+  return { transactions, summary };
+}

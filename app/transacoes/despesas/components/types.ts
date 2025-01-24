@@ -8,6 +8,6 @@ export interface Expense {
   account: string;
   category: string;
   subcategory: string;
-  value: number;
+  amount : number;
   status: ExpenseStatus;
 }
