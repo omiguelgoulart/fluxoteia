@@ -71,7 +71,7 @@ export default function DailyExpenses() {
           account: '',
           category: '',
           subcategory: '',
-          value: parseFloat(data.valor) || 0,
+          amount: parseFloat(data.valor) || 0,
           status: 'PENDENTE' as Expense['status'],
         };
         addExpense(newExpense);

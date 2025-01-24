@@ -39,7 +39,7 @@ export default function HomePage() {
       const payload = {
         ...expense,
         date: new Date(expense.date).toISOString(),
-        amount: Number(expense.value),
+        amount: Number(expense.amount),
       };
 
       console.log('Payload enviado ao servidor:', payload);
@@ -84,7 +84,7 @@ export default function HomePage() {
           account: '',
           category: '',
           subcategory: '',
-          value: parseFloat(data.value) || 0, // value total do cupom fiscal
+          amount: parseFloat(data.value) || 0, // value total do cupom fiscal
           status: 'PENDENTE' as Expense['status'], // Converte explicitamente para o tipo ExpenseStatus
         };
   

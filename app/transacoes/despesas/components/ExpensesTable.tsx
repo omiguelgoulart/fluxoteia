@@ -142,8 +142,8 @@ export default function ExpensesTable({
                   <TableCell>
                     <Input
                       type="number"
-                      value={editData.value?.toString() || ''}
-                      onChange={(e) => handleEditChange('value', parseFloat(e.target.value))}
+                      value={editData.amount?.toString() || ''}
+                      onChange={(e) => handleEditChange('amount', parseFloat(e.target.value))}
                       step="0.01"
                     />
                   </TableCell>
@@ -175,7 +175,7 @@ export default function ExpensesTable({
                     {new Intl.NumberFormat('pt-BR', {
                       style: 'currency',
                       currency: 'BRL',
-                    }).format(expense.value)}
+                    }).format(expense.amount)}
                   </TableCell>
                   <TableCell>
                     <DropdownMenu>
