@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -12,18 +12,17 @@ import {
   DialogTrigger,
   DialogDescription,
   DialogFooter,
-} from "@/components/ui/dialog"
-import { Label } from "@/components/ui/label"
-import { PlusIcon } from "lucide-react"
-import type { Expense } from "./types"
-import { QrReader } from "react-qr-reader"
-import { fetchCupomData } from "../utils/api-utils"
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { PlusIcon } from "lucide-react";
+import type { Expense } from "./types";
+import { QrReader } from "react-qr-reader";
+import { fetchCupomData } from "../utils/api-utils";
 
 type AddExpenseModalProps = {
-  onAddExpense: (expense: Omit<Expense, 'id'>) => void;
-  onQrCodeScanned?: (qrCodeData: string) => Promise<void>; // Adiciona a propriedade opcional
+  onAddExpense: (expense: Omit<Expense, "id">) => void;
+  onQrCodeScanned?: (qrCodeData: string) => Promise<void>;
 };
-
 
 export default function AddExpenseModal({ onAddExpense }: AddExpenseModalProps) {
   const [formData, setFormData] = useState<Omit<Expense, "id">>({
@@ -33,12 +32,12 @@ export default function AddExpenseModal({ onAddExpense }: AddExpenseModalProps) 
     account: "",
     category: "",
     subcategory: "",
-    amount : 0,
+    amount: 0,
     status: "PENDENTE",
-  })
+  });
 
-  const [isQrReaderOpen, setQrReaderOpen] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
+  const [isQrReaderOpen, setQrReaderOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -47,44 +46,44 @@ export default function AddExpenseModal({ onAddExpense }: AddExpenseModalProps) 
       [name]: name === "amount" ? Number.parseFloat(value) || 0 : value,
     }));
   };
-  
+
   const handleSelectChange = (name: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleQrScanSuccess = async (qrCodeData: string) => {
-    setQrReaderOpen(false)
-    setIsLoading(true)
+    setQrReaderOpen(false);
+    setIsLoading(true);
 
     try {
-      const cupomData = await fetchCupomData(qrCodeData)
+      const cupomData = await fetchCupomData(qrCodeData);
       setFormData((prev) => ({
         ...prev,
         number: cupomData.number || "",
         description: cupomData.nome || "",
-        value: Number.parseFloat(cupomData.valor.replace(",", ".")) || 0,
+        amount: Number.parseFloat(cupomData.valor.replace(",", ".")) || 0,
         date: cupomData.data || prev.date,
-      }))
+      }));
     } catch (error) {
-      console.error("Erro ao processar os dados do QR Code:", error)
-      alert("Erro ao processar os dados do QR Code.")
+      console.error("Erro ao processar os dados do QR Code:", error);
+      alert("Erro ao processar os dados do QR Code.");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-  
+
     if (!formData.account || !formData.category || !formData.subcategory || formData.amount <= 0) {
       alert("Por favor, preencha todos os campos obrigatórios.");
       return;
     }
-  
-    console.log("Dados enviados ao servidor:", formData); // Adicione este log para verificar o payload
-  
+
+    console.log("Dados enviados ao servidor:", formData);
+
     onAddExpense(formData);
-  
+
     setFormData({
       date: new Date().toISOString().split("T")[0],
       number: "",
@@ -96,7 +95,6 @@ export default function AddExpenseModal({ onAddExpense }: AddExpenseModalProps) 
       status: "PENDENTE",
     });
   };
-  
 
   const subcategoriasPorCategoria: { [key: string]: string[] } = {
     CUSTOS_OPERACAO: [
@@ -131,7 +129,7 @@ export default function AddExpenseModal({ onAddExpense }: AddExpenseModalProps) 
     OUTRAS_DESPESAS: ["Multas e juros", "Imprevistos"],
     IMPOSTOS_CONTRIBUICOES: ["Simples Nacional", "INSS/FGTS", "Taxas municipais"],
     OUTRAS_RECEITAS: ["Juros recebidos", "Descontos recebidos", "Outras receitas não operacionais"],
-  }
+  };
 
   return (
     <Dialog>
@@ -144,7 +142,7 @@ export default function AddExpenseModal({ onAddExpense }: AddExpenseModalProps) 
       <DialogContent className="sm:max-w-[425px]" aria-describedby="dialog-description">
         <DialogHeader>
           <DialogTitle>Nova Despesa</DialogTitle>
-          <DialogDescription id="dialog-description">
+          <DialogDescription>
             Preencha os detalhes da nova despesa abaixo ou escaneie um QR Code para preencher automaticamente.
           </DialogDescription>
         </DialogHeader>
@@ -162,7 +160,7 @@ export default function AddExpenseModal({ onAddExpense }: AddExpenseModalProps) 
               <QrReader
                 onResult={(result) => {
                   if (result) {
-                    handleQrScanSuccess(result.getText())
+                    handleQrScanSuccess(result.getText());
                   }
                 }}
                 constraints={{ facingMode: "environment" }}
@@ -181,26 +179,12 @@ export default function AddExpenseModal({ onAddExpense }: AddExpenseModalProps) 
 
           <div className="space-y-2">
             <Label htmlFor="number">Nº/Série</Label>
-            <Input
-              type="text"
-              id="number"
-              name="number"
-              value={formData.number}
-              onChange={handleInputChange}
-              required
-            />
+            <Input type="text" id="number" name="number" value={formData.number} onChange={handleInputChange} required />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="description">Descrição</Label>
-            <Input
-              type="text"
-              id="description"
-              name="description"
-              value={formData.description}
-              onChange={handleInputChange}
-              required
-            />
+            <Input type="text" id="description" name="description" value={formData.description} onChange={handleInputChange} required />
           </div>
 
           <div className="space-y-2">
@@ -224,8 +208,8 @@ export default function AddExpenseModal({ onAddExpense }: AddExpenseModalProps) 
             <Select
               value={formData.category}
               onValueChange={(value) => {
-                handleSelectChange("category", value)
-                setFormData((prev) => ({ ...prev, subcategory: "" }))
+                handleSelectChange("category", value);
+                setFormData((prev) => ({ ...prev, subcategory: "" }));
               }}
             >
               <SelectTrigger>
@@ -294,6 +278,5 @@ export default function AddExpenseModal({ onAddExpense }: AddExpenseModalProps) 
         </form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
-
