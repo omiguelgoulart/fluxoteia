@@ -1,6 +1,6 @@
-'use client'
+'use client';
 
-import { Transaction } from "../types/transaction"
+import { Transaction } from "../types/transaction";
 import {
   Table,
   TableBody,
@@ -8,11 +8,11 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
 
 interface TransactionsTableProps {
-  transactions: Transaction[]
+  transactions: Transaction[];
 }
 
 export function TransactionsTable({ transactions }: TransactionsTableProps) {
@@ -36,19 +36,17 @@ export function TransactionsTable({ transactions }: TransactionsTableProps) {
               <TableCell>{transaction.details}</TableCell>
               <TableCell>{transaction.account}</TableCell>
               <TableCell className="text-right text-green-500">
-                {transaction.inputValue ? new Intl.NumberFormat('pt-BR', {
-                  style: 'currency',
-                  currency: 'BRL'
-                }).format(transaction.inputValue) : '-'}
+                {transaction.inputValue
+                  ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(transaction.inputValue)
+                  : '-'}
               </TableCell>
               <TableCell className="text-right text-red-500">
-                {transaction.outputValue ? new Intl.NumberFormat('pt-BR', {
-                  style: 'currency',
-                  currency: 'BRL'
-                }).format(transaction.outputValue) : '-'}
+                {transaction.outputValue
+                  ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(transaction.outputValue)
+                  : '-'}
               </TableCell>
               <TableCell className="text-center">
-                <Badge 
+                <Badge
                   variant={transaction.status === 'RECEBIDO' ? 'secondary' : 'default'}
                   className="w-20"
                 >
@@ -60,6 +58,5 @@ export function TransactionsTable({ transactions }: TransactionsTableProps) {
         </TableBody>
       </Table>
     </div>
-  )
+  );
 }
-
