@@ -5,21 +5,17 @@ import Modal from "react-modal";
 import { QrReader } from "react-qr-reader";
 import { Button } from "@/components/ui/button";
 
-// Tipo explícito para o resultado retornado pelo QrReader
-interface QrReaderResult {
-  text?: string;
-}
-
 export default function QRCodeModal() {
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [scannedData, setScannedData] = useState("");
+  const [scannedData, setScannedData] = useState<string | null>(null);
 
   const openModal = () => setModalIsOpen(true);
   const closeModal = () => setModalIsOpen(false);
 
-  const handleScan = (result: QrReaderResult | null) => {
-    if (result?.text) {
-      setScannedData(result.text);
+  const handleScan = (result: unknown | null) => {
+    if (result && typeof result === "object" && "text" in result) {
+      const qrText = (result as { text: string }).text;
+      setScannedData(qrText);
       closeModal();
     }
   };
@@ -38,7 +34,7 @@ export default function QRCodeModal() {
         <div className="p-4">
           <h2 className="text-2xl font-bold mb-4">Escaneie o QR Code</h2>
           <QrReader
-            onResult={(result) => handleScan(result as unknown as QrReaderResult)}
+            onResult={(result) => handleScan(result)}
             constraints={{ facingMode: "environment" }}
             containerStyle={{ width: "100%" }}
           />
