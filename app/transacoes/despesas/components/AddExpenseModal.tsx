@@ -139,7 +139,10 @@ export default function AddExpenseModal({ onAddExpense }: AddExpenseModalProps) 
           Adicionar Despesa
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]" aria-describedby="dialog-description">
+      <DialogContent
+        className="sm:max-w-[425px] max-h-[90vh] overflow-y-auto"
+        aria-describedby="dialog-description"
+      >
         <DialogHeader>
           <DialogTitle>Nova Despesa</DialogTitle>
           <DialogDescription>
@@ -184,7 +187,14 @@ export default function AddExpenseModal({ onAddExpense }: AddExpenseModalProps) 
 
           <div className="space-y-2">
             <Label htmlFor="description">Descrição</Label>
-            <Input type="text" id="description" name="description" value={formData.description} onChange={handleInputChange} required />
+            <Input
+              type="text"
+              id="description"
+              name="description"
+              value={formData.description}
+              onChange={handleInputChange}
+              required
+            />
           </div>
 
           <div className="space-y-2">
