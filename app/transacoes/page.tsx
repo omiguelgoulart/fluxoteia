@@ -12,8 +12,23 @@ interface Movimentacao {
   description: string | null;
   account: string | null;
   tipo: 'ENTRADA' | 'SAIDA';
-  value: number;
-  status: 'PENDENTE' | 'RECEBIDO';
+  amount: number;
+  status: 'PENDENTE' | 'PAGO' | 'CANCELADO' | 'RECEBIDO';
+  entrada?: {
+    id: number;
+    data: string;
+    total: number;
+  } | null;
+  despesa?: {
+    id: number;
+    date: string;
+    description: string | null;
+    account: string | null;
+    category: string;
+    subcategory: string;
+    amount: number;
+    status: 'PAGO' | 'PENDENTE';
+  } | null;
 }
 
 async function fetchTransactions(): Promise<{ transactions: Transaction[]; summary: TransactionSummary }> {
@@ -26,20 +41,20 @@ async function fetchTransactions(): Promise<{ transactions: Transaction[]; summa
   const data: Movimentacao[] = await res.json();
 
   const summary: TransactionSummary = {
-    totalInput: data.filter((t) => t.tipo === 'ENTRADA').reduce((sum, t) => sum + t.value, 0),
-    totalOutput: data.filter((t) => t.tipo === 'SAIDA').reduce((sum, t) => sum + t.value, 0),
-    accountsPayable: data.filter((t) => t.status === 'PENDENTE' && t.tipo === 'SAIDA').reduce((sum, t) => sum + t.value, 0),
-    accountsReceivable: data.filter((t) => t.status === 'PENDENTE' && t.tipo === 'ENTRADA').reduce((sum, t) => sum + t.value, 0),
+    totalInput: data.filter((t) => t.tipo === 'ENTRADA').reduce((sum, t) => sum + t.amount, 0),
+    totalOutput: data.filter((t) => t.tipo === 'SAIDA').reduce((sum, t) => sum + t.amount, 0),
+    accountsPayable: data.filter((t) => t.status === 'PENDENTE' && t.tipo === 'SAIDA').reduce((sum, t) => sum + t.amount, 0),
+    accountsReceivable: data.filter((t) => t.status === 'PENDENTE' && t.tipo === 'ENTRADA').reduce((sum, t) => sum + t.amount, 0),
   };
 
   const transactions: Transaction[] = data.map((t) => ({
     id: String(t.id),
     date: t.date,
-    details: t.description || 'Sem descrição',
-    account: t.account || 'Não especificado',
-    inputValue: t.tipo === 'ENTRADA' ? t.value : null,
-    outputValue: t.tipo === 'SAIDA' ? t.value : null,
-    status: t.status as TransactionStatus, // Casting explícito para TransactionStatus
+    details: t.description || t.despesa?.description || 'Sem descrição',
+    account: t.account || t.despesa?.account || 'Não especificado',
+    inputValue: t.tipo === 'ENTRADA' ? t.amount : null,
+    outputValue: t.tipo === 'SAIDA' ? t.amount : null,
+    status: t.status as TransactionStatus,
   }));
 
   return { transactions, summary };
