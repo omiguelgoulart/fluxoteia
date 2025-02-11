@@ -25,5 +25,4 @@ export interface Despesa {
   account: string | null;
   category: string;
   value: number;
-  status: 'PAGO' | 'PENDENTE';
 }

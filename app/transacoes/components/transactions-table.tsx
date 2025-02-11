@@ -9,7 +9,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 
 interface TransactionsTableProps {
   transactions: Transaction[];
@@ -26,7 +25,6 @@ export function TransactionsTable({ transactions }: TransactionsTableProps) {
             <TableHead>CONTA UTILIZADA</TableHead>
             <TableHead className="text-right">VALOR DE ENTRADA</TableHead>
             <TableHead className="text-right">VALOR DE SAÍDA</TableHead>
-            <TableHead className="text-center w-[100px]">STATUS</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -52,18 +50,6 @@ export function TransactionsTable({ transactions }: TransactionsTableProps) {
                       currency: "BRL",
                     }).format(transaction.outputValue)
                   : "-"}
-              </TableCell>
-              <TableCell className="text-center">
-                <Badge
-                  variant={
-                    transaction.status === "RECEBIDO" || transaction.status === "PAGO"
-                      ? "secondary"
-                      : "default"
-                  }
-                  className="w-20"
-                >
-                  {transaction.status}
-                </Badge>
               </TableCell>
             </TableRow>
           ))}

@@ -14,11 +14,6 @@ interface Movimentacao {
   tipo: 'ENTRADA' | 'SAIDA';
   amount: number;
   status: 'PENDENTE' | 'PAGO' | 'CANCELADO' | 'RECEBIDO';
-  entrada?: {
-    id: number;
-    data: string;
-    total: number;
-  } | null;
   despesa?: {
     id: number;
     date: string;
@@ -31,8 +26,9 @@ interface Movimentacao {
   } | null;
 }
 
-async function fetchTransactions(): Promise<{ transactions: Transaction[]; summary: TransactionSummary }> {
-  const res = await fetch(`${API_BASE_URL}/movimentacao`, { cache: 'no-store' });
+// Função para buscar transações com filtro de mês
+async function fetchTransactions(selectedMonth: string): Promise<{ transactions: Transaction[]; summary: TransactionSummary }> {
+  const res = await fetch(`${API_BASE_URL}/movimentacao?month=${selectedMonth}`, { cache: 'no-store' });
 
   if (!res.ok) {
     throw new Error('Erro ao carregar movimentações');
@@ -65,11 +61,12 @@ export default function TransactionsPage() {
   const [summary, setSummary] = useState<TransactionSummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedMonth, setSelectedMonth] = useState<string>(new Date().toISOString().slice(0, 7)); // Pega o mês atual
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const { transactions, summary } = await fetchTransactions();
+        const { transactions, summary } = await fetchTransactions(selectedMonth);
         setTransactions(transactions);
         setSummary(summary);
       } catch (err: unknown) {
@@ -84,7 +81,7 @@ export default function TransactionsPage() {
     }
 
     fetchData();
-  }, []);
+  }, [selectedMonth]); // Atualiza os dados ao mudar o mês
 
   if (loading) {
     return <div className="min-h-screen flex justify-center items-center">Carregando...</div>;
@@ -101,6 +98,16 @@ export default function TransactionsPage() {
   return (
     <div className="min-h-screen bg-background">
       <div className="p-6 space-y-6 max-w-[1400px] mx-auto">
+        <div className="flex justify-between items-center">
+          <h2 className="text-lg font-bold">Filtrar por Mês:</h2>
+          <input
+            type="month"
+            value={selectedMonth}
+            onChange={(e) => setSelectedMonth(e.target.value)}
+            className="border p-2 rounded"
+          />
+        </div>
+
         {summary && <Summary data={summary} />}
         <TransactionsTable transactions={transactions} />
       </div>

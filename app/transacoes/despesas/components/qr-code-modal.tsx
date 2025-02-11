@@ -8,15 +8,24 @@ import { Button } from "@/components/ui/button";
 export default function QRCodeModal() {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [scannedData, setScannedData] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const openModal = () => setModalIsOpen(true);
   const closeModal = () => setModalIsOpen(false);
 
-  const handleScan = (result: unknown | null) => {
-    if (result && typeof result === "object" && "text" in result) {
-      const qrText = (result as { text: string }).text;
-      setScannedData(qrText);
-      closeModal();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleScan = (result: any) => {
+    if (result) {
+      if (result instanceof Error) {
+        // Se for um erro, exiba a mensagem de erro
+        console.error(result);
+        setError("Erro ao acessar a câmera. Verifique as permissões.");
+      } else if (typeof result === "object" && "text" in result) {
+        // Se for um resultado válido, processe o QR code
+        const qrText = result.text;
+        setScannedData(qrText);
+        closeModal();
+      }
     }
   };
 
@@ -33,6 +42,7 @@ export default function QRCodeModal() {
       >
         <div className="p-4">
           <h2 className="text-2xl font-bold mb-4">Escaneie o QR Code</h2>
+          {error && <p className="text-red-500">{error}</p>}
           <QrReader
             onResult={(result) => handleScan(result)}
             constraints={{ facingMode: "environment" }}
